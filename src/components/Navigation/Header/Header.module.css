@@ -1,0 +1,11 @@
+.Header {
+  padding: 1rem 0;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 2rem;
+}
+
+.HeaderInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
