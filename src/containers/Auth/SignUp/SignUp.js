@@ -6,7 +6,7 @@ import * as actions from '../../../store/actions'
 import PageContent from '../../../hoc/Layout/PageContent/PageContent'
 import Form from '../../../components/Form/Form'
 
-import { changeInputValue, checkValidity } from '../../../shared/utility'
+import { changeInputValue, isFormValuesValid } from '../../../shared/utility'
 
 class SignUp extends Component {
   state = {
@@ -103,7 +103,12 @@ class SignUp extends Component {
   // When the form submits
   onSubmitHandler = e => {
     e.preventDefault()
-    this.isFormValuesValid()
+    const [newInputs, valid] = isFormValuesValid(this.state.inputs)
+
+    this.setState({
+      inputs: newInputs,
+      submitForm: valid
+    })
 
     if (this.state.submitForm) {
       this.props.onSignUp(
@@ -114,28 +119,6 @@ class SignUp extends Component {
       )
     } 
   }
-
-  // Check if input values are valid
-  isFormValuesValid = () => {
-    let valid = true
-    let newInputsObj = {
-      ...this.state.inputs
-    }
-
-    // loop through each input and test using validate.js in utility.js
-    Object.entries(this.state.inputs).forEach( ([name, input]) => {
-      if ( input.validation ) {
-        newInputsObj = checkValidity(newInputsObj, name)
-        valid = newInputsObj[name].error && valid ? false : valid
-      }
-    })
-
-    this.setState({
-      inputs: newInputsObj,
-      submitForm: valid
-    })
-  }
-
 
   render() {
     const redirect = this.props.isLoggedIn ? <Redirect to="/" /> : null

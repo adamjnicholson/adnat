@@ -1,4 +1,5 @@
 import * as actionTypes from './actionTypes'
+import { orgGet } from './orgs'
 import axios from '../../axios'
 
 const authStart = () => {
@@ -10,7 +11,7 @@ const authStart = () => {
 const authSuccess = (sessionId, name) => {
   return {
     type: actionTypes.AUTH_SUCCESS,
-    sessionId: sessionId,
+    sessionId: sessionId, 
     name: name
   }
 }
@@ -22,36 +23,96 @@ const authFail = error => {
   }
 }
 
+const logout = () => {
+  localStorage.removeItem('sessionId');
+  localStorage.removeItem('expirationDate');
+  localStorage.removeItem('name');
+
+  return {
+    type: actionTypes.AUTH_LOGOUT,
+  } 
+}
+
+// Sign up or login in user
 export const auth = (type, name, email, password, passwordConf) => {
   return dispatch => {
     dispatch(authStart())
     const [data, url] = getAuthData(type, name, email, password, passwordConf)
+    let userName = name
+    let sessionId = null
+
     axios.post(url, data)
       .then(res => {
-        //local storage here
-        axios.defaults.headers.common['Authorization'] = res.data.sessionId // set the session id
-        dispatch(authSuccess(res.data.sessionId, name))
+        sessionId = res.data.sessionId
+        axios.defaults.headers.common['Authorization'] =  sessionId // set the session id when making requests
+        return axios.get('/users/me')
+      })
+      .then( res => {
+        userName = res.data.name
+        const expirationDate = new Date(new Date().getTime() + 3600 * 1000); // sessionId expires in 1 hour
+        localStorage.setItem('sessionId', sessionId);
+        localStorage.setItem('expirationDate', expirationDate);
+        localStorage.setItem('name', userName);
+
+        dispatch(authSuccess(sessionId, userName))
+        dispatch(orgGet())
       })
       .catch(err => {
-        console.log(err.response)
         dispatch(authFail(err.response.data.error))
       })
   }
 }
 
+// Logs the user out
 export const authLogout = () => {
-  return {
-    type: actionTypes.AUTH_LOGOUT,
+  return dispatch => {
+    axios.delete('/auth/logout')
+      .then(res => {
+        dispatch(logout())
+      })
+      .catch(err => {
+        console.log(err.response)
+      })
   }
 }
 
+// Clears auth errors when form mounts
 export const authClearErrors = () => {
   return {
     type: actionTypes.AUTH_CLEAR_ERRORS
   }
 }
 
+// Log user in if they have session id in local storage
+export const authAutoLogin = () => {
+  return dispatch => {
+    const sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) {
+      dispatch(logout());
+    } else {
+      const expirationDate = new Date(localStorage.getItem('expirationDate'));
+      if (expirationDate <= new Date()) {
+        dispatch(logout());
+      } else {
+        const name = localStorage.getItem('name');
+        axios.defaults.headers.common['Authorization'] =  sessionId // set the session id when making requests
+        dispatch(authSuccess(sessionId, name));
+        dispatch(checkAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000 ));
+      }   
+    }
+  };
+}
 
+//Log the user out after expirationTime expires
+const checkAuthTimeout = (expirationTime) => {
+  return dispatch => {
+      setTimeout(() => {
+          dispatch(logout());
+      }, expirationTime * 1000);
+  };
+};
+
+// return object for post request depending on it was signup or login
 const getAuthData = (type, name, email, password, passwordConf) => {
   let data = {}
   let url = null
@@ -75,7 +136,6 @@ const getAuthData = (type, name, email, password, passwordConf) => {
       break;
     default: return null
   }
-
   return [data, url]
 }
 

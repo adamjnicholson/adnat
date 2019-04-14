@@ -1,5 +1,10 @@
 export {
   auth,
   authLogout,
-  authClearErrors
+  authClearErrors,
+  authAutoLogin
 } from './auth'
+
+export {
+  orgCreateJoin
+} from './orgs'

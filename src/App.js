@@ -8,8 +8,15 @@ import LogIn from './containers/Auth/LogIn/LogIn'
 import LogOut from './containers/Auth/Logout/Logout'
 import Dashboard from './containers/Dashboard/Dashboard'
 
+import * as actions from './store/actions'
+
 
 class App extends Component {
+
+  componentDidMount() {
+    this.props.onAutoLogin()
+  }
+
   render() {
     let routes = (
       <Switch>
@@ -46,4 +53,10 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(App)
+const mapDispatchToProps = dispatch => {
+  return {
+    onAutoLogin: () => dispatch(actions.authAutoLogin())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
