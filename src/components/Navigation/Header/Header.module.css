@@ -7,5 +7,23 @@
 .HeaderInner {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
+}
+
+.Logo {
+  padding-right: 1rem;
+  margin-right: 1rem;
+  border-right: 1px solid #ccc;
+}
+
+.Nav {
+  flex-grow: 1;
+}
+
+.Nav ul {
+  justify-content: flex-end
+}
+
+.Nav.Spread li:first-child {
+  margin-right: auto
 }

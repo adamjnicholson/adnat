@@ -38,3 +38,21 @@ export const checkValidity = ( allInputs, name ) => {
 
   return inputsObj
 }
+
+// Check if input values are valid
+export const isFormValuesValid = inputs => {
+  let valid = true
+  let newInputsObj = {
+    ...inputs
+  }
+
+  // loop through each input and test using validate.js in utility.js
+  Object.entries(inputs).forEach( ([name, input]) => {
+    if ( input.validation ) {
+      newInputsObj = checkValidity(newInputsObj, name)
+      valid = newInputsObj[name].error && valid ? false : valid
+    }
+  })
+
+  return [newInputsObj, valid]
+}

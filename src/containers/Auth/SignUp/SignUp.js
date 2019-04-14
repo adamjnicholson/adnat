@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import * as actions from '../../../store/actions'
-import axios from '../../../axios'
 
 import PageContent from '../../../hoc/Layout/PageContent/PageContent'
 import Form from '../../../components/Form/Form'
@@ -91,6 +90,10 @@ class SignUp extends Component {
     submitForm: true, // are all inputs valid?
   }
 
+  componentDidMount() {
+    this.props.onMount()
+  }
+
   // Change the state's input value
   onChangeHandler = (e, input) => {
     const newInputObj = changeInputValue(this.state.inputs, input, e.target.value)
@@ -166,7 +169,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onSignUp: (name, email, password, passwordConf) => dispatch(actions.auth(name, email, password, passwordConf))
+    onSignUp: (name, email, password, passwordConf) => dispatch(actions.auth('signup', name, email, password, passwordConf)),
+    onMount: () => dispatch(actions.authClearErrors())
   }
 }
 
