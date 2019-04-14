@@ -1,9 +1,11 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 
 import PageContent from '../../hoc/Layout/PageContent/PageContent'
 import NameCard from '../../components/Dashboard/NameCard/NameCard'
 import CreateOrganisation from '../../components/Organisation/CreateOrganisation/CreateOrganisation'
+import ListOrganisations from '../../components/Organisation/ListOrganisations/ListOrganisations'
+import UserOrganisation from '../../components/Organisation/UserOrganisation/UserOrganisation'
 import * as actions from '../../store/actions'
 import { changeInputValue, isFormValuesValid } from '../../shared/utility'
 
@@ -56,23 +58,60 @@ class Dashboard extends Component {
       )
     }  
   }
+
+  onEditOrg = id => {
+    console.log('edit' + id)
+  }
+
+  onJoinOrg = id => {
+    this.props.onJoinOrg(id)
+  }
+
+  onLeaveOrg = id => {
+    this.props.onLeaveOrg()
+  }
+
  
 
   render() {
+    let modules = null; //TODO ADD SPINNER
+
+    if (this.props.organisations) {
+      if (this.props.userOrg) {
+        modules = (
+          <UserOrganisation 
+            org={this.props.organisations.find(org => org.id === this.props.userOrg)}
+            shifts={this.props.shifts}
+            edit={this.onEditOrg}
+            leave={this.onLeaveOrg}
+          />
+        )
+      } else {
+        modules = (
+          <Fragment>
+            <ListOrganisations 
+              organisations={this.props.organisations}
+              edit={this.onEditOrg}
+              join={this.onJoinOrg}
+            />
+    
+            <CreateOrganisation 
+              inputs={this.state.create}
+              canSubmit={this.state.canSubmit}
+              loading={this.props.createForm.loading}
+              error={this.props.createForm.state}
+              changed={this.onChangeHandler}
+              submit={this.onSubmitHandler}
+            />
+          </Fragment>
+        )
+      }
+    }
+
     return (
       <PageContent pageTitle="Dashboard">
         <NameCard name={this.props.name} />
-      
-        <CreateOrganisation 
-          inputs={this.state.create}
-          canSubmit={this.state.canSubmit}
-          loading={this.props.createForm.loading}
-          error={this.props.createForm.state}
-          changed={this.onChangeHandler}
-          submit={this.onSubmitHandler}
-        />
-      
-        
+        { modules }
       </PageContent>
 
     )
@@ -81,14 +120,18 @@ class Dashboard extends Component {
 
 const mapStateToProps = state => {
   return {
-    name: state.auth.name,
-    createForm: state.orgs.createForm
+    name: state.user.name,
+    createForm: state.orgs.createForm,
+    organisations: state.orgs.organisations,
+    userOrg: state.user.orgId
   }  
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    onCreateJoinOrg: (name, rate) => dispatch(actions.orgCreateJoin(name, rate))
+    onCreateJoinOrg: (name, rate) => dispatch(actions.orgCreateJoin(name, rate)),
+    onJoinOrg: id => dispatch(actions.userJoinOrg(id)),
+    onLeaveOrg: () => dispatch(actions.userLeaveOrg())
   }
 }
 

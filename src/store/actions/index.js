@@ -8,3 +8,9 @@ export {
 export {
   orgCreateJoin
 } from './orgs'
+
+export {
+  userSet,
+  userJoinOrg,
+  userLeaveOrg
+} from './user'

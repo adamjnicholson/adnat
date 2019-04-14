@@ -1,7 +1,7 @@
 import * as actionTypes from '../actions/actionTypes'
 
 const initalState = {
-  organisations: [],
+  organisations: null,
   createForm: {
     loading: false,
     error: null
@@ -47,13 +47,12 @@ const orgsGet = (state, action) => {
   }
 }
 
-
 const reducer = (state = initalState, action) => {
   switch (action.type) {
     case actionTypes.ORGS_START: return orgsStart(state, action)
-    case actionTypes.ORGS_CREATE_JOIN_SUCCESS : return orgsCreateJoinSuccess(state, action)
-    case actionTypes.ORGS_CREATE_JOIN_FAIL : return orgsCreateJoinFail(state, action)
-    case actionTypes.ORGS_GET : return orgsGet(state, action)
+    case actionTypes.ORGS_CREATE_JOIN_SUCCESS: return orgsCreateJoinSuccess(state, action)
+    case actionTypes.ORGS_CREATE_JOIN_FAIL: return orgsCreateJoinFail(state, action)
+    case actionTypes.ORGS_GET: return orgsGet(state, action)
     default: return state
   }
 }

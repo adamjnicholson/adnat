@@ -9,3 +9,7 @@ export const ORGS_CREATE_JOIN_SUCCESS = 'ORGS_CREATE_JOIN_SUCCESS'
 export const ORGS_CREATE_JOIN_FAIL = 'ORGS_CREATE_JOIN_FAIL'
 export const ORGS_GET = 'ORGS_GET'
 
+export const USER_SET = 'USER_SET'
+export const USER_JOIN_ORG = 'USER_JOIN_ORG'
+export const USER_LEAVE_ORG = 'USER_LEAVE_ORG'
+
