@@ -1,10 +1,7 @@
 import * as actionTypes from '../actions/actionTypes'
 
 const initalState = {
-  // sessionId: '3cbca703-c46b-457f-9f5a-e21030edbbc5',
-  // name: 'Adam Nicholson',
   sessionId: null,
-  name: null,
   error: null,
   loading: false,
 }
@@ -18,6 +15,7 @@ const authSuccess = (state, action) => {
     ...state, 
     sessionId: action.sessionId,
     name: action.name,
+    orgId: action.orgId,
     loading: false,
   }
 }
@@ -35,6 +33,7 @@ const authLogout = (state, action) => {
     ...state,
     sessionId: null,
     name: null,
+    orgId: null
   }
 }
 
