@@ -1,6 +1,8 @@
 import * as actionTypes from '../actions/actionTypes'
 
 const initalState = {
+  // sessionId: '3cbca703-c46b-457f-9f5a-e21030edbbc5',
+  // name: 'Adam Nicholson',
   sessionId: null,
   name: null,
   error: null,
