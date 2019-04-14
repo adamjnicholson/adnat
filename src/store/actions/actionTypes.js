@@ -8,6 +8,7 @@ export const ORGS_START = 'ORGS_START'
 export const ORGS_CREATE_JOIN_SUCCESS = 'ORGS_CREATE_JOIN_SUCCESS'
 export const ORGS_CREATE_JOIN_FAIL = 'ORGS_CREATE_JOIN_FAIL'
 export const ORGS_GET = 'ORGS_GET'
+export const ORGS_EDIT = 'ORGS_EDIT'
 
 export const USER_SET = 'USER_SET'
 export const USER_JOIN_ORG = 'USER_JOIN_ORG'

@@ -49,6 +49,26 @@ export const orgCreateJoin = (name, rate)  => {
   }
 }
 
+export const orgEdit = (id, name, rate) => {
+  return dispatch => {
+    const data ={
+      name: name,
+      hourlyRate: rate
+    }
+
+    axios.put('/organisations/' + id, data)
+      .then( res => {
+        dispatch({
+          type: actionTypes.ORGS_EDIT,
+          id: id,
+          name: name,
+          rate: rate
+        })
+      })
+
+  }
+}
+
 export const orgGet = () => {
   return dispatch => {
     axios.get('/organisations')

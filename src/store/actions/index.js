@@ -6,7 +6,8 @@ export {
 } from './auth'
 
 export {
-  orgCreateJoin
+  orgCreateJoin,
+  orgEdit
 } from './orgs'
 
 export {

@@ -5,6 +5,10 @@ const initalState = {
   createForm: {
     loading: false,
     error: null
+  },
+  editForm: {
+    loading: false,
+    error: null
   }
 }
 
@@ -47,12 +51,30 @@ const orgsGet = (state, action) => {
   }
 }
 
+const orgsEdit = (state, action) => {
+  const orgs = state.organisations.map( org => {
+    if (org.id === action.id) {
+      return {
+        id: action.id,
+        name: action.name,
+        hourlyRate: action.rate
+      }
+    } 
+    return org
+  })
+  return {
+    ...state,
+    organisations: orgs
+  }
+}
+
 const reducer = (state = initalState, action) => {
   switch (action.type) {
     case actionTypes.ORGS_START: return orgsStart(state, action)
     case actionTypes.ORGS_CREATE_JOIN_SUCCESS: return orgsCreateJoinSuccess(state, action)
     case actionTypes.ORGS_CREATE_JOIN_FAIL: return orgsCreateJoinFail(state, action)
     case actionTypes.ORGS_GET: return orgsGet(state, action)
+    case actionTypes.ORGS_EDIT: return orgsEdit(state, action)
     default: return state
   }
 }

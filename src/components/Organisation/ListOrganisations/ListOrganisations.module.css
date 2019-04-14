@@ -1,0 +1,28 @@
+.Content {
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Content:hover i.Icon {
+  color: #000;
+}
+
+i.Icon{
+  position: relative;
+  font-size: 4rem;
+  color: #aaa;
+  transition: color .3s ease-out;
+}
+
+i.Icon:before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+

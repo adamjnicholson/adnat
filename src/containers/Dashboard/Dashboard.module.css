@@ -1,0 +1,15 @@
+.Dashboard {
+  display: flex
+}
+
+.Dashboard > .Modules {
+  width: 75%;
+}
+
+.Dashboard > .Actions {
+  width: 25%;
+}
+
+.Dashboard .Divider {
+  margin: 2rem 0;
+}
