@@ -18,6 +18,7 @@ class Dashboard extends Component {
         label: 'Name',
         inputType: 'input',
         config: {
+          name: 'create',
           type: 'text',
           value: '',
           required: true
@@ -28,6 +29,7 @@ class Dashboard extends Component {
         label: 'Hourly Rate: $',
         inputType: 'input',
         config: {
+          name: 'create',
           type: 'text',
           value: '',
           required: true
@@ -40,6 +42,7 @@ class Dashboard extends Component {
         label: 'Name',
         inputType: 'input',
         config: {
+          name: 'edit',
           type: 'text',
           value: '',
           required: true
@@ -50,6 +53,7 @@ class Dashboard extends Component {
         label: 'Hourly Rate: $',
         inputType: 'input',
         config: {
+          name: 'edit',
           type: 'text',
           value: '',
           required: true
@@ -62,48 +66,28 @@ class Dashboard extends Component {
     submitForm: true
   }
 
-  onChangeCreateHandler = (e, input) => {
-    const newInputObj = changeInputValue(this.state.create, input, e.target.value)
-    this.setState({create: newInputObj})
+  onChangeHandler = (e, input) => {
+    const form = e.target.name
+    const newInputObj = changeInputValue(this.state[form], input, e.target.value)
+    this.setState({[form]: newInputObj})
   }
 
-  onChangeEditHandler = (e, input) => {
-    const newInputObj = changeInputValue(this.state.edit, input, e.target.value)
-    this.setState({edit: newInputObj})
-  }
-
-  // When the form submits
-  onSubmitCreateHandler = e => {
+  onSubmitHandler(e, form, id) {
     e.preventDefault()
-    const [newInputs, valid] = isFormValuesValid(this.state.create)
+    const [newInputs, valid] = isFormValuesValid(this.state[form])
+    const name = newInputs.name.config.value
+    const rate = newInputs.rate.config.value
+
     this.setState({
-      create: newInputs,
+      [form]: newInputs,
       submitForm: valid
     })
 
-    if (this.state.submitForm) {  
-      this.props.onCreateJoinOrg(
-        this.state.create.name.config.value,
-        this.state.create.rate.config.value
-      )
-    }  
-  }
+    if (valid) {
+     if (form === 'create') this.props.onCreateJoinOrg(name, rate)
+     if (form === 'edit') this.props.onEditOrg(id, name, rate)
+    }
 
-  onSubmitEditHandler = e => {
-    e.preventDefault()
-    const [newInputs, valid] = isFormValuesValid(this.state.edit)
-    this.setState({
-      edit: newInputs,
-      submitForm: valid
-    })
-
-    if (this.state.submitForm) {  
-      this.props.onEditOrg(
-        this.state.editing,
-        this.state.edit.name.config.value,
-        this.state.edit.rate.config.value
-      )
-    }  
   }
 
   onAddNew = () => {
@@ -126,10 +110,18 @@ class Dashboard extends Component {
   }
 
   onJoinOrg = id => {
+    this.setState({
+      creating: false,
+      editing: false
+    })
     this.props.onJoinOrg(id)
   }
 
   onLeaveOrg = id => {
+    this.setState({
+      creating: false,
+      editing: false
+    })
     this.props.onLeaveOrg()
   }
 
@@ -147,8 +139,8 @@ class Dashboard extends Component {
             canSubmit={this.state.canSubmit}
             loading={this.props.createForm.loading}
             error={this.props.createForm.error}
-            changed={this.onChangeCreateHandler}
-            submit={this.onSubmitCreateHandler}
+            changed={this.onChangeHandler}
+            submit={(e) => this.onSubmitHandler(e, 'create')}
           />
         )
       } else if (this.state.editing) {
@@ -158,10 +150,9 @@ class Dashboard extends Component {
             canSubmit={this.state.canSubmit}
             loading={this.props.editForm.loading}
             error={this.props.editForm.error}
-            changed={this.onChangeEditHandler}
-            submit={this.onSubmitEditHandler}
+            changed={this.onChangeHandler}
+            submit={(e) => this.onSubmitHandler(e, 'edit', this.state.editing)}
           />
-         
         )
       }
 
@@ -188,7 +179,6 @@ class Dashboard extends Component {
 
     const firstName = this.props.name ? this.props.name.split(' ')[0] : ''
   
-
     return (
       <PageContent pageTitle={'Hello ' + firstName}>
         <div className={classes.Dashboard}>

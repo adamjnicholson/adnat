@@ -1,5 +1,6 @@
 import * as actionTypes from './actionTypes'
 import axios from '../../axios';
+import { userSet } from './user';
 
 const orgStart = form => {
   return {
@@ -41,6 +42,7 @@ export const orgCreateJoin = (name, rate)  => {
     .then(res => {
       console.log(res.data)
       dispatch(orgCreateJoinSuccess(res.data))
+      dispatch(userSet())
     })
     .catch(err => {
       console.log(err.response)

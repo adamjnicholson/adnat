@@ -4,6 +4,7 @@
 
 .Dashboard > .Modules {
   width: 75%;
+  padding-right: 2rem;
 }
 
 .Dashboard > .Actions {
