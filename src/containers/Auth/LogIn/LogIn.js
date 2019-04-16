@@ -78,7 +78,7 @@ class LogIn extends Component {
 
   render() {
 
-    const redirect = this.props.isLoggedIn ? <Redirect to="/" /> : null
+    const redirect = this.props.isLoggedIn ? <Redirect to="/shifts" /> : null
 
 
     return (

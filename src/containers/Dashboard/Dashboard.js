@@ -125,6 +125,10 @@ class Dashboard extends Component {
     this.props.onLeaveOrg()
   }
 
+
+  onViewShifts = () => {
+    this.props.history.push('/shifts')
+  }
  
 
   render() {
@@ -160,7 +164,7 @@ class Dashboard extends Component {
         modules = (
           <UserOrganisation 
             org={this.props.organisations.find(org => org.id === this.props.userOrg)}
-            shifts={this.props.shifts}
+            shifts={this.onViewShifts}
             edit={this.onEditOrg}
             leave={this.onLeaveOrg}
           />

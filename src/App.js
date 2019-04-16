@@ -7,6 +7,7 @@ import SignUp from './containers/Auth/SignUp/SignUp'
 import LogIn from './containers/Auth/LogIn/LogIn'
 import LogOut from './containers/Auth/Logout/Logout'
 import Dashboard from './containers/Dashboard/Dashboard'
+import Shifts from './containers/Shifts/Shifts'
 
 import * as actions from './store/actions'
 
@@ -26,14 +27,14 @@ class App extends Component {
       </Switch>
     )
 
-    if (this.props.isLoggedIn) {
+    if (this.props.loggedIn) {
       routes = (
         <Switch>
           <Route path="/logout" component={LogOut} />
+          <Route path="/shifts" component={Shifts} />
           <Route path="/" exact component={Dashboard} />
           <Redirect to="/" />
         </Switch>
-       
       )
     }
 
@@ -49,7 +50,7 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    isLoggedIn: state.auth.sessionId
+    loggedIn: state.auth.sessionId
   }
 }
 
