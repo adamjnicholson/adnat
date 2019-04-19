@@ -6,14 +6,14 @@ import PageContent from '../../hoc/Layout/PageContent/PageContent'
 import Shift from '../../components/Shift/Shift'
 import DatePicker from 'react-datepicker'
 import TimePicker from 'rc-time-picker'
-import { changeInputValue } from '../../shared/utility'
+import { changeInputValue, getDate, getTime } from '../../shared/utility'
 
 
 import 'rc-time-picker/assets/index.css';
 import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 
 
-class Shifts extends Component {
+class Shifts extends Component { 
   state = {
     shifts: [],
     employees: [],
@@ -80,6 +80,7 @@ class Shifts extends Component {
 
     axios.get('/shifts')
       .then(res => {
+        
         this.setState({shifts: res.data})
       })
   }
@@ -95,23 +96,19 @@ class Shifts extends Component {
   }
 
   getFullDate(dateObj, timeObj) {
-    const year = dateObj.getFullYear()
-    const month = ('0' + dateObj.getMonth()).slice(-2)
-    const day = ('0' + dateObj.getDate()).slice(-2)
-    const hours = timeObj._d.getHours()
-    const mins = timeObj._d.getMinutes()
-    return `${year}-${month}-${day} ${hours}:${mins}`
+    return `${getDate(dateObj)} ${getTime(timeObj)}`
   }
 
   onCreateShiftHandler = e => {
     e.preventDefault()
     const data = {
       userId: this.getValue('employee'),
-      start: this.getFullDate(this.getValue('startDate'), this.getValue('startTime')),
-      finish: this.getFullDate(this.getValue('startDate'), this.getValue('finishTime')),
+      start: this.getFullDate(this.getValue('startDate'), this.getValue('startTime')._d),
+      finish: this.getFullDate(this.getValue('startDate'), this.getValue('finishTime')._d),
       breakLength: this.getValue('breakLength')
     }
 
+    console.log(data)
 
     axios.post('/shifts', data)
       .then( res => {
@@ -164,6 +161,16 @@ class Shifts extends Component {
       }
     })
 
+    const orderedShifts = this.state.shifts.sort( (a, b) => new Date(a.start) - new Date(b.start))
+    const shifts = orderedShifts.map( shift =>   (
+      <Shift 
+        key={shift.id}
+        user={this.state.employees.find( em => em.id === shift.userId)}
+        pay={this.props.orgPay}
+        shift={shift}
+      />
+    ))
+
     return (
       <PageContent pageTitle="Shifts">
         <table className="ui celled table">
@@ -179,6 +186,7 @@ class Shifts extends Component {
             </tr>
           </thead>
           <tbody>
+            {shifts}
             <tr className="ui form">
               { inputs }
               <td colSpan="2">
@@ -194,7 +202,7 @@ class Shifts extends Component {
 
 const mapStateToProps = state => {
   return {
-    orgId: state.user.orgId
+    org: state.orgs.organisations.find( org => org.id === state.user.orgId)
   }
 }
 

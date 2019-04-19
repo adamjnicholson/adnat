@@ -14,8 +14,16 @@ import * as actions from './store/actions'
 
 class App extends Component {
 
-  componentDidMount() {
+  async componentDidMount() {
     this.props.onAutoLogin()
+  }
+
+  async componentDidUpdate(prevState) {
+    if (this.props.sessionId && this.props.sessionId !== prevState.sessionId) {
+      await this.props.getAllOrgs()
+      await this.props.onUserSet()
+      // get shifts
+    }
   }
 
   render() {
@@ -27,7 +35,7 @@ class App extends Component {
       </Switch>
     )
 
-    if (this.props.loggedIn) {
+    if (this.props.sessionId) {
       routes = (
         <Switch>
           <Route path="/logout" component={LogOut} />
@@ -50,13 +58,18 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    loggedIn: state.auth.sessionId
+    sessionId: state.auth.sessionId,
+    name: state.user.name,
+    userOrg: (state.orgs.organisations || []).find( org => org.id === state.user.orgId),
+    organisations: state.orgs.organisations
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    onAutoLogin: () => dispatch(actions.authAutoLogin())
+    onAutoLogin: () => dispatch(actions.authAutoLogin()),
+    getAllOrgs: () => dispatch(actions.orgGet()),
+    onUserSet: orgs => dispatch(actions.userSet(orgs))
   }
 }
 
