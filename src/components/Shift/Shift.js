@@ -1,26 +1,29 @@
 import React from 'react'
+import { getDate, getTime } from '../../shared/utility'
 
 const shift = props => {
-  const getDate = date => {
-    const time = new Date(date)
-    return `${time.getDate()}/${("0" + (time.getMonth() + 1)).slice(-2)}/${time.getFullYear()}`
-  }
+  const start = new Date(props.shift.start)
+  const finish = new Date(props.shift.finish)
+  const shiftLength = (finish - start) / 1000 / 60 / 60 /* -> get seconds -> get minutes -> get hours */
+  const worked = shiftLength - (props.shift.breakLength / 60)
+  const cost = worked * props.pay
+  
+  console.log(props.shift.start)
 
-  const getTime = date => {
-    const time = new Date(date)
-    return `${(time.getHours() + 24) % 12 || 12}: ${time.getMinutes()}${time.getHours() > 11 ? 'am' : 'pm'}`
+  const round = num => {
+    return Math.round((num + 0.00001) * 100) / 100
   }
 
   // const getHoursWorked()
-
   return (
   <tr>
-    <td>{props.user}</td>
-    <td>{getDate(props.start)}</td>
-    <td>{getTime(props.start)}</td>
-    <td>{getTime(props.finish)}</td>
-    <td>{props.breakLength}</td>
-    <td></td>
+    <td>{props.user.name}</td> 
+    <td>{getDate(new Date(start))}</td>
+    <td>{getTime(new Date(start))}</td>
+    <td>{getTime(new Date(finish))}</td>
+    <td>{props.shift.breakLength}</td>
+    <td>{round(worked)}</td>
+    <td>{`$${round(cost)}`}</td>
   </tr>
   )
 }

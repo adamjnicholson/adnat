@@ -97,7 +97,7 @@ class Dashboard extends Component {
     })
   }
 
-  onEditOrg = id => {
+  onEditOrg = (id = this.props.userOrg.id) => {
     const org = this.props.organisations.find( org => org.id === id)
     let inputs = changeInputValue(this.state.edit, 'name', org.name)
     inputs = changeInputValue(inputs, 'rate', org.hourlyRate)
@@ -117,7 +117,7 @@ class Dashboard extends Component {
     this.props.onJoinOrg(id)
   }
 
-  onLeaveOrg = id => {
+  onLeaveOrg = () => {
     this.setState({
       creating: false,
       editing: false
@@ -163,7 +163,7 @@ class Dashboard extends Component {
       if (this.props.userOrg) {
         modules = (
           <UserOrganisation 
-            org={this.props.organisations.find(org => org.id === this.props.userOrg)}
+            org={this.props.userOrg}
             shifts={this.onViewShifts}
             edit={this.onEditOrg}
             leave={this.onLeaveOrg}
@@ -199,14 +199,14 @@ class Dashboard extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = state =>{
   return {
     name: state.user.name,
+    userOrg: (state.orgs.organisations || []).find( org => org.id === state.user.orgId),
     createForm: state.orgs.createForm,
     editForm: state.orgs.editForm,
-    organisations: state.orgs.organisations,
-    userOrg: state.user.orgId
-  }  
+    organisations: state.orgs.organisations
+  }
 }
 
 const mapDispatchToProps = dispatch => {

@@ -67,12 +67,8 @@ class LogIn extends Component {
       submitForm: valid
     })
  
-
     if (this.state.submitForm) {
-      this.props.onLogIn(
-        this.state.inputs.email.config.value,
-        this.state.inputs.password.config.value,
-      )
+      this.props.onLogIn(this.state.inputs.email.config.value, this.state.inputs.password.config.value)
     } 
   }
 

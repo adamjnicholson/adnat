@@ -7,6 +7,7 @@ export {
 
 export {
   orgCreateJoin,
+  orgGet,
   orgEdit
 } from './orgs'
 

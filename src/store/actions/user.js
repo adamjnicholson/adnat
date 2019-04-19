@@ -1,15 +1,16 @@
 import * as actionTypes from '../actions/actionTypes'
 import axios from '../../axios';
 
- export const userSet = () => {
+ export const userSet = orgs => {
    return dispatch => {
-     axios.get('/users/me')
+     return axios.get('/users/me')
       .then( res => {
-        dispatch({
+        const data = {
           type: actionTypes.USER_SET,
           name: res.data.name,
           orgId: res.data.organisationId
-        })
+        }     
+        dispatch(data)
       })
       .catch( err => console.log(err.response))
    }
@@ -36,7 +37,7 @@ import axios from '../../axios';
      .then( res => {
        dispatch({
          type: actionTypes.USER_JOIN_ORG,
-         orgId: res.data.id
+         org: res.data
        })
      })
      .catch( err => console.log(err.response))

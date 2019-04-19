@@ -23,12 +23,6 @@ const orgCreateJoinFail = error => {
   }
 }
 
-const orgGetAll = orgs => {
-  return {
-    type: actionTypes.ORGS_GET,
-    orgs: orgs
-  }
-}
 
 export const orgCreateJoin = (name, rate)  => {
   return dispatch => {
@@ -40,7 +34,6 @@ export const orgCreateJoin = (name, rate)  => {
 
     axios.post('/organisations/create_join', data)
     .then(res => {
-      console.log(res.data)
       dispatch(orgCreateJoinSuccess(res.data))
       dispatch(userSet())
     })
@@ -73,9 +66,13 @@ export const orgEdit = (id, name, rate) => {
 
 export const orgGet = () => {
   return dispatch => {
-    axios.get('/organisations')
+    return axios.get('/organisations')
       .then(res => {
-        dispatch(orgGetAll(res.data))
+        dispatch({
+          type: actionTypes.ORGS_GET,
+          orgs: res.data
+        })
       })
   }
 }
+
