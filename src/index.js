@@ -11,6 +11,7 @@ import App from './App'
 import authReducer from './store/reducers/auth'
 import orgsReducer from './store/reducers/orgs'
 import userReducer from './store/reducers/user'
+import shiftsReducer from './store/reducers/shifts'
 
 import * as serviceWorker from './serviceWorker'
 
@@ -19,7 +20,8 @@ const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX
 const rootReducer = combineReducers({
   auth: authReducer,
   orgs: orgsReducer,
-  user: userReducer
+  user: userReducer,
+  shifts: shiftsReducer
 })
 
 const store = createStore(rootReducer, composeEnhancers(

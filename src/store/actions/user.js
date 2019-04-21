@@ -33,11 +33,11 @@ import axios from '../../axios';
     const data = {
       organisationId: id
     }
-    axios.post('/organisations/join', data)
+    return axios.post('/organisations/join', data)
      .then( res => {
        dispatch({
          type: actionTypes.USER_JOIN_ORG,
-         org: res.data
+         orgId: res.data.id
        })
      })
      .catch( err => console.log(err.response))

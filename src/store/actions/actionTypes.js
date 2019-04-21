@@ -8,9 +8,16 @@ export const ORGS_START = 'ORGS_START'
 export const ORGS_CREATE_JOIN_SUCCESS = 'ORGS_CREATE_JOIN_SUCCESS'
 export const ORGS_CREATE_JOIN_FAIL = 'ORGS_CREATE_JOIN_FAIL'
 export const ORGS_GET = 'ORGS_GET'
+export const ORGS_GET_USERS = 'ORGS_GET_USERS'
 export const ORGS_EDIT = 'ORGS_EDIT'
+export const ORGS_CLEAR_USERS = 'ORGS_CLEAR_USERS'
 
 export const USER_SET = 'USER_SET'
 export const USER_JOIN_ORG = 'USER_JOIN_ORG'
 export const USER_LEAVE_ORG = 'USER_LEAVE_ORG'
+
+export const SHIFTS_GET = 'SHIFTS_GET'
+export const SHIFTS_CREATE = 'SHIFTS_CREATE'
+export const SHIFTS_DELETE = 'SHIFTS_DELETE'
+export const SHIFTS_UPDATE = 'SHIFTS_UPDATE'
 

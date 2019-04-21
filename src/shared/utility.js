@@ -57,17 +57,19 @@ export const isFormValuesValid = inputs => {
   return [newInputsObj, valid]
 }
 
-export const getDate = (dateObj, sep = '-') => {
-  const year = dateObj.getFullYear()
-  const month = ('0' + (dateObj.getMonth() + 1)).slice(-2)
-  const day = ('0' + dateObj.getDate()).slice(-2)
-  return year + sep + month + sep + day
+export const getDate = (dateObj, display = 'ymd') => {
+  const date = {
+    y: dateObj.getFullYear(),
+    m: leadingZero(dateObj.getMonth() + 1),
+    d: leadingZero(dateObj.getDate())
+  }
+  return display.split('').map( type => date[type]).join('-')
 }
 
 export const getTime = (dateObj, showSuffix) => {
   const hours = leadingZero((dateObj.getHours() % 12 || 12))
   const mins = leadingZero(dateObj.getMinutes())
-  const suffix = dateObj.getHours() < 12 ? 'am' : 'pm'
+  const suffix = dateObj.getHours() < 12 ? 'pm' : 'am'
 
   return `${hours}:${mins} ${showSuffix ? suffix : ''}`
 }

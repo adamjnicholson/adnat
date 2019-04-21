@@ -109,12 +109,13 @@ class Dashboard extends Component {
     })
   }
 
-  onJoinOrg = id => {
+  onJoinOrg = async id => {
     this.setState({
       creating: false,
       editing: false
     })
-    this.props.onJoinOrg(id)
+    await this.props.onJoinOrg(id)
+    this.props.onGetOrgUsers()
   }
 
   onLeaveOrg = () => {
@@ -123,6 +124,7 @@ class Dashboard extends Component {
       editing: false
     })
     this.props.onLeaveOrg()
+    this.props.onClearOrgUsers()
   }
 
 
@@ -214,7 +216,9 @@ const mapDispatchToProps = dispatch => {
     onCreateJoinOrg: (name, rate) => dispatch(actions.orgCreateJoin(name, rate)),
     onEditOrg: (id, name, rate) => dispatch(actions.orgEdit(id, name, rate)),
     onJoinOrg: id => dispatch(actions.userJoinOrg(id)),
-    onLeaveOrg: () => dispatch(actions.userLeaveOrg())
+    onLeaveOrg: () => dispatch(actions.userLeaveOrg()),
+    onClearOrgUsers: () => dispatch(actions.orgClearUsers()),
+    onGetOrgUsers: () => dispatch(actions.orgGetUsers())
   }
 }
 

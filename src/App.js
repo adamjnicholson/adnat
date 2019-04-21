@@ -14,14 +14,18 @@ import * as actions from './store/actions'
 
 class App extends Component {
 
-  async componentDidMount() {
+  componentDidMount() {
     this.props.onAutoLogin()
   }
 
   async componentDidUpdate(prevState) {
     if (this.props.sessionId && this.props.sessionId !== prevState.sessionId) {
-      await this.props.getAllOrgs()
+      await this.props.onOrgsGet()
       await this.props.onUserSet()
+      if (this.props.orgId) {
+        this.props.onOrgsGetUsers()
+      }
+      this.props.onShiftsGet()
       // get shifts
     }
   }
@@ -59,17 +63,17 @@ class App extends Component {
 const mapStateToProps = state => {
   return {
     sessionId: state.auth.sessionId,
-    name: state.user.name,
-    userOrg: (state.orgs.organisations || []).find( org => org.id === state.user.orgId),
-    organisations: state.orgs.organisations
+    orgId: state.user.orgId
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
     onAutoLogin: () => dispatch(actions.authAutoLogin()),
-    getAllOrgs: () => dispatch(actions.orgGet()),
-    onUserSet: orgs => dispatch(actions.userSet(orgs))
+    onOrgsGet: () => dispatch(actions.orgGet()),
+    onOrgsGetUsers: () => dispatch(actions.orgGetUsers()),
+    onUserSet: () => dispatch(actions.userSet()),
+    onShiftsGet: () => dispatch(actions.shiftsGet())
   }
 }
 

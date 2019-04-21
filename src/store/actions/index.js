@@ -8,7 +8,9 @@ export {
 export {
   orgCreateJoin,
   orgGet,
-  orgEdit
+  orgGetUsers,
+  orgEdit,
+  orgClearUsers
 } from './orgs'
 
 export {
@@ -16,3 +18,10 @@ export {
   userJoinOrg,
   userLeaveOrg
 } from './user'
+
+export {
+  shiftsGet,
+  shiftsCreate,
+  shiftsDelete,
+  shiftsUpdate
+} from './shifts'

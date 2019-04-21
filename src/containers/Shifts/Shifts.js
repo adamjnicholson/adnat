@@ -1,175 +1,164 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import axios from '../../axios'
+import * as actions from '../../store/actions'
+import moment from  'moment'
 
 import PageContent from '../../hoc/Layout/PageContent/PageContent'
-import Shift from '../../components/Shift/Shift'
-import DatePicker from 'react-datepicker'
-import TimePicker from 'rc-time-picker'
-import { changeInputValue, getDate, getTime } from '../../shared/utility'
+import ShiftData from '../../components/Shift/ShiftData/ShiftData'
+import ShiftFields from '../../components/Shift/ShiftFields/ShiftFields'
 
-
-import 'rc-time-picker/assets/index.css';
-import 'react-datepicker/dist/react-datepicker-cssmodules.css';
-
-
+import { getDate, getTime } from '../../shared/utility'
 class Shifts extends Component { 
   state = {
-    shifts: [],
-    employees: [],
     inputs: {
       employee: {
         inputType: 'select',
-        options: null,
+        options: this.props.orgUsers,
         config: {
-          value: '',
+          createValue: this.props.orgUsers[0].id,
+          editValue: ''
         }
       },
       startDate: {
         inputType: 'date',
         config: {
-          value: new Date()
+          createValue: new Date(),
+          editValue: ''
         }
       },
       startTime: {
         inputType: 'time',
         config: {
           minuteStep: 15,
-          value: ''
+          createValue: moment(),
+          editValue: ''
         }
       },
       finishTime: {
         inputType: 'time',
         config: {
           minuteStep: 15,
-          value: ''
+          createValue: moment(),
+          editValue: ''
         }
       },
       breakLength: {
         inputType: 'input',
         config: {
           type: 'number',
-          value: ''
+          createValue: '',
+          editValue: ''
         }
       }
-    }
+    },
+    editing: null
   }
 
-  componentDidMount() {
-    const inputs = {
-      ...this.state.inputs,
-      employee: {
-        ...this.state.inputs.employee,       
-        config: {
-          ...this.state.inputs.employee.config
-        }
-      }
-    }
-    axios.get('/users')
-      .then(res => {
-        inputs.employee.options = res.data
-        inputs.employee.config.value = res.data[0].id
-        this.setState({
-          employees: res.data,
-          inputs: inputs
-        })
-      })
-      .catch (err => {
-        console.log(err.response)
-      })
 
-    axios.get('/shifts')
-      .then(res => {
-        
-        this.setState({shifts: res.data})
-      })
-  }
-
-  onChangeHandler = (e, input, dateObj) => {
+  onChangeHandler = (e, form, input, dateObj) => {
     const value = dateObj || e.target.value
-    const newInputObj = changeInputValue(this.state.inputs, input, value)
+  
+    const newInputObj = {
+      ...this.state.inputs,
+      [input]: {
+        ...this.state.inputs[input],
+        config: {
+          ...this.state.inputs[input].config,
+          [form + 'Value']: value
+        }
+      }
+    }
+
     this.setState({inputs: newInputObj})
   }
 
-  getValue(input) {
-    return this.state.inputs[input].config.value
+
+  getValue(input, form) {
+    return this.state.inputs[input].config[form + 'Value']
   }
 
   getFullDate(dateObj, timeObj) {
     return `${getDate(dateObj)} ${getTime(timeObj)}`
   }
 
-  onCreateShiftHandler = e => {
-    e.preventDefault()
-    const data = {
-      userId: this.getValue('employee'),
-      start: this.getFullDate(this.getValue('startDate'), this.getValue('startTime')._d),
-      finish: this.getFullDate(this.getValue('startDate'), this.getValue('finishTime')._d),
-      breakLength: this.getValue('breakLength')
+  getShiftData = form => {
+    console.log(this.getValue('startTime', form))
+    let data =  {
+      start: this.getFullDate(this.getValue('startDate', form), this.getValue('startTime', form)._d),
+      finish: this.getFullDate(this.getValue('startDate', form), this.getValue('finishTime', form)._d),
+      breakLength: this.getValue('breakLength', form)
     }
 
-    console.log(data)
+    if (form === 'create') {
+      data.userId = this.getValue('employee', form)
+    }
+    return data
+  }
 
-    axios.post('/shifts', data)
-      .then( res => {
-        this.setState({
-          shifts: this.state.shifts.concat(res.data)
-        })
-      })
-      .catch( err => {
-        console.log(err.response)
-      })
+  onCreateHandler = e => {
+    e.preventDefault()
+    this.props.onCreateShift(this.getShiftData('create'))
+  }
+
+  onUpdateHandler  = id => {
+    this.setState({editing: null})
+    this.props.onUpdateShift(id, this.getShiftData('edit'))
+  }
+
+  onEditHandler = id => {
+    const shift = this.props.shifts.find( shift => shift.id === id)
+    const inputVals = {
+      employee: shift.userId,
+      startDate: new Date(shift.start),
+      startTime: moment(new Date(shift.start)),
+      finishTime: moment(new Date(shift.finish)),
+      breakLength: shift.breakLength
+    }
+
+    const inputs = Object.entries(this.state.inputs).reduce( (acc, curr) => {
+      acc[curr[0]] = {
+        ...curr[1],
+        config: {
+          ...curr[1].config,
+          editValue: inputVals[curr[0]]
+        }
+      }
+
+      return acc
+    }, {})
+
+    this.setState({editing: id, inputs: inputs})
   }
 
 
-  render() {
-    const inputs = Object.entries(this.state.inputs).map( ([name, input]) => {
-      switch (input.inputType) {
-        case 'input':
-          return ( 
-          <td key={name}><input 
-            className="field"
-            type={input.config.type} 
-            value={input.config.value}
-            onChange={ e => this.onChangeHandler(e, name)}
-          /></td>
-          )
-        case 'select':
-          return (
-            <td key={name}><select
-              onChange={ e => this.onChangeHandler(e, name)}
-              value={input.config.value}>
-              {this.state.inputs.employee.options ? input.options.map(op => <option key={op.id} value={op.id}>{op.name}</option>) : ''}
-            </select></td>
-          )
-        case 'date':
-          return (
-            <td key={name}><DatePicker
-              selected={new Date(input.config.value)}
-              onChange={date => this.onChangeHandler(null, name, date)}
-           /></td>
-          )
-        case 'time':
-          return (
-            <td key={name}><TimePicker
-              showSecond={false}
-              minuteStep={input.config.minuteStep} 
-              onChange={time => this.onChangeHandler(null, name, time)}
-            /></td>
-          )
-        default: return false
-      }
-    })
 
-    const orderedShifts = this.state.shifts.sort( (a, b) => new Date(a.start) - new Date(b.start))
-    const shifts = orderedShifts.map( shift =>   (
-      <Shift 
-        key={shift.id}
-        user={this.state.employees.find( em => em.id === shift.userId)}
-        pay={this.props.orgPay}
-        shift={shift}
-      />
-    ))
+  render() {
+    const orderedShifts = this.props.shifts.slice().sort( (a, b) => new Date(a.start) - new Date(b.start))
+    const shifts = orderedShifts.map( shift => {
+      if (this.state.editing === shift.id) {
+        return (
+          <ShiftFields
+            key={shift.id}
+            inputs={this.state.inputs}
+            form="edit"
+            change={this.onChangeHandler}>
+            <td colSpan="3">
+              <button onClick={ () => this.onUpdateHandler(shift.id)} className="ui button">Save</button>
+            </td>
+          </ShiftFields>
+        )
+      }
+      return (
+        <ShiftData 
+          key={shift.id}
+          user={this.props.orgUsers.find( em => em.id === shift.userId)}
+          pay={this.props.userOrg.hourlyRate}
+          shift={shift}
+          edit={() => this.onEditHandler(shift.id)}
+          delete={() => this.props.onDeleteShift(shift.id)}
+        />
+      )
+    })
 
     return (
       <PageContent pageTitle="Shifts">
@@ -183,16 +172,21 @@ class Shifts extends Component {
               <th>Break Length (minutes)</th>
               <th>Hours Worked</th>
               <th>Shift Cost</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
+
             {shifts}
-            <tr className="ui form">
-              { inputs }
-              <td colSpan="2">
-                <button onClick={ e => this.onCreateShiftHandler(e)} className="ui button">Create Shift</button>
+            <ShiftFields
+              inputs={this.state.inputs}
+              form="create"
+              change={this.onChangeHandler}>
+              <td colSpan="3">
+                <button onClick={ e => this.onCreateHandler(e)} className="ui button">Create Shift</button>
               </td>
-            </tr>
+            </ShiftFields>
+
           </tbody>
         </table>
       </PageContent>
@@ -202,8 +196,20 @@ class Shifts extends Component {
 
 const mapStateToProps = state => {
   return {
-    org: state.orgs.organisations.find( org => org.id === state.user.orgId)
+    userOrg: state.orgs.organisations.find( org => org.id === state.user.orgId),
+    shifts: state.shifts.shifts,
+    orgUsers: state.orgs.orgUsers
   }
 }
 
-export default connect(mapStateToProps)(Shifts)
+const mapDispatchToProps = dispatch => {
+  return {
+    onCreateShift: shift => dispatch(actions.shiftsCreate(shift)),
+    onDeleteShift: id => dispatch(actions.shiftsDelete(id)),
+    onUpdateShift: (id, shift) => dispatch(actions.shiftsUpdate(id, shift))
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Shifts)
+

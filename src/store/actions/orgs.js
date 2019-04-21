@@ -44,6 +44,38 @@ export const orgCreateJoin = (name, rate)  => {
   }
 }
 
+export const orgGet = () => {
+  return dispatch => {
+    return axios.get('/organisations')
+      .then(res => {
+        dispatch({
+          type: actionTypes.ORGS_GET,
+          orgs: res.data
+        })
+      })
+  }
+}
+
+export const orgGetUsers = () => {
+  return dispatch => {
+    return axios.get('/users')
+      .then (res => {
+        dispatch({
+          type: actionTypes.ORGS_GET_USERS,
+          orgUsers: res.data
+        })
+      })
+  }
+}
+
+export const orgClearUsers = () => {
+  return dispatch => {
+    dispatch({
+      type: actionTypes.ORGS_CLEAR_USERS
+    })
+  }
+}
+
 export const orgEdit = (id, name, rate) => {
   return dispatch => {
     const data ={
@@ -64,15 +96,5 @@ export const orgEdit = (id, name, rate) => {
   }
 }
 
-export const orgGet = () => {
-  return dispatch => {
-    return axios.get('/organisations')
-      .then(res => {
-        dispatch({
-          type: actionTypes.ORGS_GET,
-          orgs: res.data
-        })
-      })
-  }
-}
+
 
