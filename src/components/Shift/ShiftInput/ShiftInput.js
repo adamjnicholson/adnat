@@ -1,7 +1,6 @@
 import React from 'react'
 import DatePicker from 'react-datepicker'
 import TimePicker from 'rc-time-picker'
-import moment from 'moment'
 
 import 'rc-time-picker/assets/index.css';
 import 'react-datepicker/dist/react-datepicker-cssmodules.css';

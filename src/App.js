@@ -24,8 +24,8 @@ class App extends Component {
       await this.props.onUserSet()
       if (this.props.orgId) {
         this.props.onOrgsGetUsers()
+        this.props.onShiftsGet()
       }
-      this.props.onShiftsGet()
       // get shifts
     }
   }
